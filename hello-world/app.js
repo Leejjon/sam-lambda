@@ -1,5 +1,5 @@
-// const axios = require('axios')
-// const url = 'http://checkip.amazonaws.com/';
+const axios = require('axios');
+const url = 'https://direct.playstation.com/nl-nl';
 let response;
 
 /**
@@ -16,18 +16,34 @@ let response;
  */
 exports.lambdaHandler = async (event, context) => {
     try {
-        // const ret = await axios(url);
+        const status = await checkIfPs5IsForSaleInNetherlands();
         response = {
             'statusCode': 200,
             'body': JSON.stringify({
-                message: 'hello world2',
-                // location: ret.data.trim()
+                message: 'Response status of https://direct.playstation.com/nl-nl',
+                status: status
             })
-        }
+        };
+        return response;
     } catch (err) {
-        console.log(err);
-        return err;
+        response = {
+            'statusCode': 200,
+            'body': JSON.stringify({
+                message: 'Response status of https://direct.playstation.com/nl-nl',
+                status: err.toString().substr(err.toString().length - 3)
+            })
+        };
+        return response;
     }
-
-    return response
 };
+
+const checkIfPs5IsForSaleInNetherlands = async () => {
+    try {
+        const {status} = await axios.get(url);
+        return status;
+    } catch (err) {
+        const {response} = err;
+        const {status} = response;
+        throw new Error(status);
+    }
+}
