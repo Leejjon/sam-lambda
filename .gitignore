@@ -1,4 +1,4 @@
-hello-world/node_modules
+check-ps5-availability/node_modules
 .aws-sam/
 .idea/
 samconfig.toml

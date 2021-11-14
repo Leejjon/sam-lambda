@@ -11,31 +11,33 @@ Globals:
     Timeout: 3
 
 Resources:
-  HelloWorldFunction:
+  CheckPs5AvailabilityFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello-world/
+      CodeUri: check-ps5-availability/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
         - x86_64
+      Policies:
+        - Statement:
+            - Sid: DisableEventBridgeRulePolicy
+              Effect: Allow
+              Action:
+                - events:DisableRule
+              Resource: 'arn:aws:events:eu-central-1:039085306114:rule/check-ps5-availability-CheckPs5AvailabilityFunctio-1F8PUNLXZTSRZ'
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        CheckPs5Availability:
+          Name: Every15Minutes
+          Type: Schedule
           Properties:
-            Path: /hello
-            Method: get
+            Schedule: rate(15 minutes)
+            Enabled: true
 
 Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
+  CheckPs5AvailabilityFunction:
     Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
+    Value: !GetAtt CheckPs5AvailabilityFunction.Arn
+  CheckPs5AvailabilityIamRole:
     Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+    Value: !GetAtt CheckPs5AvailabilityFunctionRole.Arn

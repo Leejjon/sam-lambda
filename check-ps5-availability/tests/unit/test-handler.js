@@ -3,15 +3,19 @@
 const app = require('../../app.js');
 const chai = require('chai');
 const sinon = require('sinon');
-const expect = chai.expect;
 const axios = require('axios');
+const expect = chai.expect;
 var event, context;
 
 describe('Test unavailable', () => {
-    let stub;
+    let axiosStub;
     beforeEach(() => {
-        const stubbedResponse = {status: '403'};
-        stub = sinon.stub(axios, "get").returns(new Promise((r) => r(stubbedResponse)));
+        const status = '403';
+        const error = new Error();
+        error.response = {
+            status: status
+        }
+        axiosStub = sinon.stub(axios, "get").throws(error);
     });
     after(function () {
         sinon.restore();
@@ -27,16 +31,16 @@ describe('Test unavailable', () => {
         let response = JSON.parse(result.body);
 
         expect(response).to.be.an('object');
-        expect(response.message).to.be.equal('Response status of https://direct.playstation.com/nl-nl');
+        expect(response.message).to.be.equal('The PS5 is not available yet at https://direct.playstation.com/nl-nl');
         expect(response.status).to.be.equal("403");
     });
 });
 
 describe('Test available', () => {
-    let stub;
+    let axiosStub;
     beforeEach(() => {
         const stubbedResponse = {status: '200'};
-        stub = sinon.stub(axios, "get").returns(new Promise((r) => r(stubbedResponse)));
+        axiosStub = sinon.stub(axios, "get").returns(new Promise((r) => r(stubbedResponse)));
     });
     after(function () {
         sinon.restore();
@@ -52,7 +56,7 @@ describe('Test available', () => {
         let response = JSON.parse(result.body);
 
         expect(response).to.be.an('object');
-        expect(response.message).to.be.equal('Response status of https://direct.playstation.com/nl-nl');
+        expect(response.message).to.be.equal('The PS5 is available at https://direct.playstation.com/nl-nl');
         expect(response.status).to.be.equal("200");
     });
 });
